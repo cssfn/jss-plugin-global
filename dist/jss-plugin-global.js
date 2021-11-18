@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 // jss:
-const jss_1 = require("jss"); // base technology of our cssfn components
+import { RuleList, } from 'jss'; // base technology of our cssfn components
 const isLiteralObject = (object) => object && (typeof (object) === 'object') && !Array.isArray(object);
 const isStyle = (object) => isLiteralObject(object);
 const combineSelector = (parent, children) => {
@@ -28,7 +26,7 @@ class GlobalStyleRule {
     constructor(key, style, options) {
         this.key = key;
         this.options = options;
-        this.rules = new jss_1.RuleList({
+        this.rules = new RuleList({
             ...options,
             parent: this,
         });
@@ -94,10 +92,9 @@ const onProcessRule = (rule, sheet) => {
     // the `@global` operation has been completed => remove unused `@global` prop:
     delete style['@global'];
 };
-function pluginGlobal() {
+export default function pluginGlobal() {
     return {
         onCreateRule,
         onProcessRule,
     };
 }
-exports.default = pluginGlobal;

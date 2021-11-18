@@ -1,7 +1,8 @@
 {
   "name": "@cssfn/jss-plugin-global",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A plugin for JSS.",
+  "type": "module",
   "main": "dist/jss-plugin-global.js",
   "types": "dist/jss-plugin-global.d.ts",
   "scripts": {
@@ -23,7 +24,7 @@
   },
   "homepage": "https://github.com/cssfn/jss-plugin-global#readme",
   "dependencies": {
-    "@cssfn/jss-plugin-extend": "^1.0.0",
+    "@cssfn/jss-plugin-extend": "^1.0.1",
     "jss": "^10.8.2"
   }
 }
