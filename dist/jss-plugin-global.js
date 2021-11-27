@@ -2,13 +2,6 @@
 import { RuleList, } from 'jss'; // base technology of our cssfn components
 const isLiteralObject = (object) => object && (typeof (object) === 'object') && !Array.isArray(object);
 const isStyle = (object) => isLiteralObject(object);
-const combineSelector = (parent, children) => {
-    if (!parent)
-        return children;
-    return (children.split(/\s*,\s*/g)
-        .map((child) => `${parent} ${child.trim()}`)
-        .join(','));
-};
 const ruleGenerateId = (rule, sheet) => rule.name ?? rule.key;
 class GlobalStyleRule {
     // BaseRule:
@@ -81,12 +74,13 @@ const onProcessRule = (rule, sheet) => {
     if (!isStyle(globalStyle))
         return;
     const { options } = rule;
-    for (const [propName, propValue] of Object.entries(globalStyle)) {
-        if (!isStyle(propValue))
+    for (const [nestedSelector, nestedStyle] of Object.entries(globalStyle)) {
+        if (!isStyle(nestedStyle))
             continue; // invalid value => can't be processed
-        sheet.addRule(propName, propValue, {
+        // place the nested rule to root:
+        sheet.addRule(nestedSelector, nestedStyle, {
             ...options,
-            selector: combineSelector(rule.selector ?? '', propName),
+            selector: nestedSelector,
         });
     } // for
     // the `@global` operation has been completed => remove unused `@global` prop:

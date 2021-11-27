@@ -19,18 +19,6 @@ const isLiteralObject   = (object: any): object is LiteralObject => object && (t
 
 const isStyle           = (object: any): object is Style => isLiteralObject(object);
 
-const combineSelector   = (parent: string, children: string): string => {
-    if (!parent) return children;
-    
-    
-    
-    return (
-        children.split(/\s*,\s*/g)
-        .map((child) => `${parent} ${child.trim()}`)
-        .join(',')
-    );
-};
-
 
 
 const ruleGenerateId = (rule: Rule, sheet?: StyleSheet) => (rule as any).name ?? rule.key;
@@ -131,21 +119,22 @@ const onProcessRule = (rule: Rule, sheet?: StyleSheet): void => {
     
     
     
-    const {options} = rule;
+    const { options } = rule;
     
     
     
-    for (const [propName, propValue] of Object.entries(globalStyle)) {
-        if (!isStyle(propValue)) continue; // invalid value => can't be processed
+    for (const [nestedSelector, nestedStyle] of Object.entries(globalStyle)) {
+        if (!isStyle(nestedStyle)) continue; // invalid value => can't be processed
         
         
         
+        // place the nested rule to root:
         sheet.addRule(
-            propName,
-            propValue,
+            nestedSelector,
+            nestedStyle,
             {
                 ...options,
-                selector: combineSelector((rule as any).selector ?? '', propName),
+                selector: nestedSelector,
             }
         );
     } // for
