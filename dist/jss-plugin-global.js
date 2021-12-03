@@ -4,26 +4,37 @@ const isLiteralObject = (object) => object && (typeof (object) === 'object') && 
 const isStyle = (object) => isLiteralObject(object);
 const ruleGenerateId = (rule, sheet) => rule.name ?? rule.key;
 class GlobalStyleRule {
-    // BaseRule:
-    type = 'style'; // for satisfying `jss-plugin-nested`
-    key;
-    isProcessed = false; // required to avoid double processed
-    options;
-    renderable;
-    // ContainerRule:
-    at = '@global';
-    rules;
-    // StyleRule:
-    style;
-    selector = ''; // for satisfying `jss-plugin-nested`
+    // unrecognized syntax on lower version of javascript
+    // // BaseRule:
+    // type        : string  = 'style' // for satisfying `jss-plugin-nested`
+    // key         : string
+    // isProcessed : boolean = false   // required to avoid double processed
+    // options     : any
+    // renderable? : Object|null|void
+    // unrecognized syntax on lower version of javascript
+    // // ContainerRule:
+    // at          = '@global'
+    // rules       : RuleList
+    // unrecognized syntax on lower version of javascript
+    // // StyleRule:
+    // style       : Style
+    // selector    : string  = ''      // for satisfying `jss-plugin-nested`
     constructor(key, style, options) {
+        // BaseRule:
+        this.type = 'style'; // for satisfying `jss-plugin-nested`
         this.key = key;
+        this.isProcessed = false; // required to avoid double processed
         this.options = options;
+        this.renderable = null;
+        // ContainerRule:
+        this.at = '@global';
         this.rules = new RuleList({
             ...options,
             parent: this,
         });
+        // StyleRule:
         this.style = style; // the `style` needs to be attached to `GlobalStyleRule` for satisfying `onProcessStyle()`
+        this.selector = ''; // for satisfying `jss-plugin-nested`
         const plugins = options?.jss?.plugins;
         const onProcessStyle = plugins?.onProcessStyle;
         onProcessStyle?.call(plugins, this.style, this, options?.sheet);

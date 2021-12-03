@@ -24,42 +24,50 @@ const isStyle           = (object: any): object is Style => isLiteralObject(obje
 const ruleGenerateId = (rule: Rule, sheet?: StyleSheet) => (rule as any).name ?? rule.key;
 
 class GlobalStyleRule {
-    // BaseRule:
-    type        : string  = 'style' // for satisfying `jss-plugin-nested`
-    key         : string
-    isProcessed : boolean = false   // required to avoid double processed
-    options     : any
-    renderable? : Object|null|void
-
-    // ContainerRule:
-    at          = '@global'
-    rules       : RuleList
-
-    // StyleRule:
-    style       : Style
-    selector    : string  = ''      // for satisfying `jss-plugin-nested`
-
+    // unrecognized syntax on lower version of javascript
+    // // BaseRule:
+    // type        : string  = 'style' // for satisfying `jss-plugin-nested`
+    // key         : string
+    // isProcessed : boolean = false   // required to avoid double processed
+    // options     : any
+    // renderable? : Object|null|void
+    
+    // unrecognized syntax on lower version of javascript
+    // // ContainerRule:
+    // at          = '@global'
+    // rules       : RuleList
+    
+    // unrecognized syntax on lower version of javascript
+    // // StyleRule:
+    // style       : Style
+    // selector    : string  = ''      // for satisfying `jss-plugin-nested`
+    
     
     
     constructor(key: string, style: Style, options: any) {
-        this.key     = key;
-        this.options = options;
-
-
-
-        this.rules = new RuleList({
+        // BaseRule:
+        (this as any).type        = 'style'; // for satisfying `jss-plugin-nested`
+        (this as any).key         = key;
+        (this as any).isProcessed = false;   // required to avoid double processed
+        (this as any).options     = options;
+        (this as any).renderable  = null;
+        
+        // ContainerRule:
+        (this as any).at    = '@global';
+        (this as any).rules = new RuleList({
             ...options,
             parent: this,
         });
-
-
-
-        this.style = style; // the `style` needs to be attached to `GlobalStyleRule` for satisfying `onProcessStyle()`
+        
+        // StyleRule:
+        (this as any).style    = style; // the `style` needs to be attached to `GlobalStyleRule` for satisfying `onProcessStyle()`
+        (this as any).selector = '';    // for satisfying `jss-plugin-nested`
+        
         const plugins : any = options?.jss?.plugins;
         const onProcessStyle : ((style: Style, rule: Rule, sheet?: StyleSheet) => void) | undefined | null = plugins?.onProcessStyle;
-        onProcessStyle?.call(plugins, this.style, this as Rule, options?.sheet as (StyleSheet|undefined));
-
-
+        onProcessStyle?.call(plugins, ((this as any).style as Style), this as unknown as Rule, options?.sheet as (StyleSheet|undefined));
+        
+        
         
         for (const [propName, propValue] of Object.entries(style)) {
             // exceptions:
@@ -71,27 +79,27 @@ class GlobalStyleRule {
             
             // because we're in `@global`, all prop names (with some exceptions above) will be recognized as selector expressions
             const selectors = propName;
-            this.rules.add(selectors, propValue, {
+            ((this as any).rules as RuleList).add(selectors, propValue, {
                 ...options,
                 generateId : ruleGenerateId,
-
+                
                 selector   : selectors,
             });
         } // for
-
+        
         
         
         // let's another plugins take care:
-        this.rules.process();
+        ((this as any).rules as RuleList).process();
     }
-
+    
     
     
     /**
      * Generates a CSS string.
      */
     toString(options?: any) {
-        return this.rules.toString(options);
+        return ((this as any).rules as RuleList).toString(options);
     }
 }
 
